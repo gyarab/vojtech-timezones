@@ -28,8 +28,27 @@ public class ServletTime extends HttpServlet {
      * @param request  servlet request
      * @param response servlet response
      */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response) {
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("text/html;charset=UTF-8");
+        String timeZoneFromUser = request.getParameter("timezoneuser");
+
+        try (PrintWriter out = response.getWriter()) {
+            out.println("<!DOCTYPE html>");
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<title>Time in zone entered by user</title>");
+            out.println("</head>");
+            out.println("<body>");
+            try {
+                ZoneId zone = ZoneId.of(timeZoneFromUser);
+                ZonedDateTime now = ZonedDateTime.now(zone);
+                out.println("<h1>Ve vámi zadaném pásmu je tento čas " + now + "</h1>");
+            } catch (DateTimeException e) {
+                out.println("<h1>Něco bylo špatně se zadanou časovou zónou</h1>");
+            }
+            out.println("</body>");
+            out.println("</html>");
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -53,31 +72,10 @@ public class ServletTime extends HttpServlet {
      *
      * @param request  servlet request
      * @param response servlet response
-     * @throws IOException      if an I/O error occurs
      */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) {
         response.setContentType("text/html;charset=UTF-8");
-        String timeZoneFromUser = request.getParameter("timezoneuser");
-
-        try (PrintWriter out = response.getWriter()) {
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Time in zone entered by user</title>");
-            out.println("</head>");
-            out.println("<body>");
-            try {
-                ZoneId zone = ZoneId.of(timeZoneFromUser);
-                ZonedDateTime now = ZonedDateTime.now(zone);
-                out.println("<h1>Ve vámi zadaném pásmu je tento čas " + now + "</h1>");
-            } catch (DateTimeException e) {
-                out.println("<h1>Něco bylo špatně se zadanou časovou zónou</h1>");
-            }
-            out.println("</body>");
-            out.println("</html>");
-        }
     }
 
     /**
